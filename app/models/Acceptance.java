@@ -24,6 +24,8 @@ public class Acceptance extends Model {
     public boolean executed;
     public Date executionTime;
     
+    public String executionId;
+    
     public boolean paid;
     public Date paidTime;
     

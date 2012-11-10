@@ -48,28 +48,25 @@ public class Offers extends Controller {
 		String token = request.headers.get("authorization").values.get(0);
 		User user = all().filter("token", token.replaceAll("\"", "")).get();
 		Offer offer = Model.all(Offer.class).filter("id", id).get();
-		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
+		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8")+"abcd";
 		HttpResponse post = WS.url(url).post();
 		System.out.println(post.getStatus());
 		System.out.println(post.getString());
 		JsonElement twitter = post.getJson().getAsJsonObject().get("twitter");
-		System.out.println("Error?");
-		System.out.println(twitter.getAsJsonObject().get("errors"));
-		System.out.println(twitter.getAsJsonObject().get("errors") != null);
 		if (twitter.getAsJsonObject().get("errors") != null) {
 			response.status = StatusCode.BAD_REQUEST;
 			renderJSON(twitter.getAsJsonObject().get("errors").toString());
 		} else {
-			BigInteger asBigInteger = twitter.getAsJsonObject().get("id").getAsBigInteger();
-			System.out.println(asBigInteger);			
+			String executionId = twitter.getAsJsonObject().get("id").getAsString();
+			Acceptance acceptance = new Acceptance();
+			acceptance.acceptor = user;
+			acceptance.offer = offer;
+			acceptance.executed = true;
+			acceptance.executionTime = new Date();
+			acceptance.executionId = executionId;
+			acceptance.save();
+			renderJSON(acceptance);
 		}
-		Acceptance acceptance = new Acceptance();
-		acceptance.acceptor = user;
-		acceptance.offer = offer;
-		acceptance.executed = true;
-		acceptance.executionTime = new Date();
-		acceptance.save();
-		renderJSON(acceptance);
 	}
 	
 	public static void acceptances() {

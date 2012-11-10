@@ -1,5 +1,6 @@
 package models;
 
+import java.util.Date;
 import java.util.UUID;
 
 import siena.Column;
@@ -19,4 +20,12 @@ public class Acceptance extends Model {
     @NotNull
     @Index("offer_index")
     public Offer offer;
+    
+    public boolean executed;
+    public Date executionTime;
+    
+    public boolean paid;
+    public Date paidTime;
+    
+    
 }

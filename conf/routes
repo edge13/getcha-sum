@@ -14,6 +14,7 @@ GET     /public/                                staticDir:public
 POST	/users									Users.create
 POST	/users/login							Users.login
 GET		/users/me/offers						Users.offers
+GET		/users/me								Users.me
 
 POST	/offers									Offers.create
 GET		/offers									Offers.getAll

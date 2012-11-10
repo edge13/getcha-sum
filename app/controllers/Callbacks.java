@@ -23,7 +23,9 @@ public class Callbacks extends Controller {
 	}
 
 	public static void dwolla(String token) {
+		System.out.println("Dwolla callback");
 		String code = params.get("code");
+		System.out.println("Dwolla callback " + code);
 		String dwollaKey = "ApS2lLgIfKNXE4BbkuMS3rSs40XyEXvFqlc72nqJ9kTm7Tmrm6";
 		String dwollaSecret = "ruNCRxzOwCtS7oQxuhy3K6I7QJ5A9XJHAZapA5DAVMgjH0n8RO";
 		String redirectUri = "http://progoserver.appspot.com/callbacks/dwolla/" + token;

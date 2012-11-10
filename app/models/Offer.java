@@ -21,4 +21,5 @@ public class Offer extends Model {
 	public String type;
 	public Double price;
 	public Integer cap;
+	public String pin;
 }

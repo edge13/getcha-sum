@@ -9,3 +9,4 @@ modules/*
 precompiled/
 war/
 target/
+logs/

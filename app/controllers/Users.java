@@ -40,7 +40,7 @@ public class Users extends Controller {
 	public static void offers() {
 		String token = request.headers.get("authorization").values.get(0);
 		User owner = all().filter("token", token.replaceAll("\"", "")).get();
-		renderJSON(Model.all(Offer.class).filter("owner.id", owner.id).get());
+		renderJSON(Model.all(Offer.class).filter("owner", owner).fetch());
 	}
 
 }

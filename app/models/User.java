@@ -1,5 +1,7 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import siena.Id;
@@ -15,4 +17,5 @@ public class User extends Model {
 	public String dwollaAccessToken;
 	public String singlyAccount;
 	public String singlyAccessToken;
+	public List<Alias> aliases = new ArrayList<Alias>();
 }

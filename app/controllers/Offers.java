@@ -81,7 +81,7 @@ public class Offers extends Controller {
     	//Use reflection id for testing
     	dsr.destinationId="812-713-9234";
     	dsr.amount = acceptance.offer.price;
-    	//dsr.pin = acceptance.offer.pin;
+    	dsr.pin = acceptance.offer.pin;
     	String dwollaUrl = "https://www.dwolla.com/oauth/rest/transactions/send?oauth_token=" + oauth_token;
     	String json = new Gson().toJson(dsr);
     	Map<String, String> headers = new HashMap<String, String>();

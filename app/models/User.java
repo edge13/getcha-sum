@@ -11,5 +11,8 @@ public class User extends Model {
 	public String name;
 	public String email;
 	public String password;
-	public UUID token;
+	public String token;
+	public String dwollaAccessToken;
+	public String singlyAccount;
+	public String singlyAccessToken;
 }

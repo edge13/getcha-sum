@@ -14,5 +14,8 @@ GET     /public/                                staticDir:public
 POST	/users									Users.create
 POST	/users/login							Users.login
 
+GET		/callbacks/dwolla/{token}				Callbacks.dwolla
+GET		/callbacks/singly/{token}				Callbacks.singly
+
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

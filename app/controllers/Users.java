@@ -19,17 +19,18 @@ public class Users extends Controller {
 
 	public static void create() {
 		User user = parseJSON(request.body);
+		user.email = user.email.toLowerCase();
 		user.insert();
 		renderJSON(user);
 	}
-	
-    static Query<User> all() {
-        return Model.all(User.class);
-    }
-	
+
+	static Query<User> all() {
+		return Model.all(User.class);
+	}
+
 	public static void login() {
 		User user = parseJSON(request.body);
-		User authenticatedUser = all().filter("email", user.email).filter("password", user.password).get();
+		User authenticatedUser = all().filter("email", user.email.toLowerCase()).filter("password", user.password).get();
 		authenticatedUser.token = UUID.randomUUID().toString();
 		authenticatedUser.update();
 		renderJSON("{\"token\" : \"" + authenticatedUser.token + "\"}");

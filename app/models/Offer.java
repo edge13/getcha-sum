@@ -16,6 +16,7 @@ public class Offer extends Model {
     @Index("owner_index")
     public User owner;
     
+    public String name;
 	public String content;
 	public String type;
 	public Double price;

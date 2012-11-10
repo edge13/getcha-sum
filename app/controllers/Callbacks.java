@@ -31,7 +31,7 @@ public class Callbacks extends Controller {
 		HttpResponse httpResponse = WS.url(url).get();
 		String json = httpResponse.getString();
 		DwollaAuth fromJson = new Gson().fromJson(json, DwollaAuth.class);
-		User authenticatedUser = all().filter("token", token).get();
+		User authenticatedUser = all().filter("token", token.replaceAll("\"", "")).get();
 		authenticatedUser.dwollaAccessToken = fromJson.access_token;
 		authenticatedUser.update();
 		renderText(fromJson.access_token);
@@ -48,7 +48,7 @@ public class Callbacks extends Controller {
 		HttpResponse httpResponse = WS.url(uri).body(body).headers(headers).post();
 		String json = httpResponse.getString();
 		SinglyAuth fromJson = new Gson().fromJson(json, SinglyAuth.class);
-		User authenticatedUser = all().filter("token", token).get();
+		User authenticatedUser = all().filter("token", token.replaceAll("\"", "")).get();
 		authenticatedUser.singlyAccessToken = fromJson.access_token;
 		authenticatedUser.singlyAccount = fromJson.account;
 		authenticatedUser.update();

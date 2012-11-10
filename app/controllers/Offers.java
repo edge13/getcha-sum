@@ -63,30 +63,19 @@ public class Offers extends Controller {
 	}
 	
     private static void pay(Acceptance acceptance) {
-    	System.out.println(acceptance.acceptor.id);
-    	System.out.println(acceptance.acceptor.email);
-    	System.out.println(acceptance.acceptor.singlyAccessToken);
-    	System.out.println(acceptance.acceptor.dwollaAccessToken);
-    	String oauth_token = "vwbbp5LhNTx5cWtFP77Mmft5SDk2FiIqAlEyo6uXtA2aGJVeMs";
-    	String infoUrl = "https://www.dwolla.com/oauth/rest/users/?oauth_token=" + oauth_token;
-    	System.out.println(infoUrl);
+    	String infoUrl = "https://www.dwolla.com/oauth/rest/users/?oauth_token=" + acceptance.acceptor.dwollaAccessToken;
     	HttpResponse httpResponse = WS.url(infoUrl).get();
-    	System.out.println(httpResponse.getStatus());
-    	System.out.println(httpResponse.getStatusText());
-    	System.out.println(httpResponse.getString());
     	DwollaInfoResponse fromJson = new Gson().fromJson(httpResponse.getString(), DwollaInfoResponse.class);
-    	System.out.println(fromJson.Response.Id);
     	DwollaSendRequest dsr = new DwollaSendRequest();
     	//dsr.destinationId = fromJson.Response.Id;
     	//Use reflection id for testing
     	dsr.destinationId="812-713-9234";
     	dsr.amount = acceptance.offer.price;
     	dsr.pin = acceptance.offer.pin;
-    	String dwollaUrl = "https://www.dwolla.com/oauth/rest/transactions/send?oauth_token=" + oauth_token;
+    	String dwollaUrl = "https://www.dwolla.com/oauth/rest/transactions/send?oauth_token=" + acceptance.offer.owner.dwollaAccessToken;
     	String json = new Gson().toJson(dsr);
     	Map<String, String> headers = new HashMap<String, String>();
     	headers.put("Content-Type", "application/json");
-    	
 		HttpResponse post = WS.url(dwollaUrl).body(json).headers(headers).post();
 		DwollaResponse response = new Gson().fromJson(post.getString(), DwollaResponse.class);
 		if (response.Success) {

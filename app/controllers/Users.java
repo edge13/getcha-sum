@@ -10,6 +10,7 @@ import java.util.UUID;
 import models.Alias;
 import models.Offer;
 import models.User;
+import models.dwolla.MemberInfo;
 import play.libs.WS;
 import siena.Model;
 import siena.Query;
@@ -17,6 +18,8 @@ import siena.Query;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import dwolla.DwollaTransfer;
 
 public class Users extends BaseController {
 
@@ -65,6 +68,7 @@ public class Users extends BaseController {
 			}
 			user.aliases.add(alias);
 		}
+		user.dwollaName = new DwollaTransfer().getInfo(user.dwollaAccessToken).Name;
 		renderJSON(user);
 	}
 

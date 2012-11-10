@@ -1,18 +1,14 @@
 package controllers;
 
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import models.Acceptance;
 import models.Offer;
 import models.User;
-import models.dwolla.DwollaInfoResponse;
-import models.dwolla.DwollaResponse;
-import models.dwolla.DwollaSendRequest;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 import play.mvc.Controller;
@@ -20,6 +16,8 @@ import siena.Model;
 import siena.Query;
 
 import com.google.gson.Gson;
+
+import dwolla.DwollaTransfer;
 
 public class Offers extends Controller {
 
@@ -58,32 +56,11 @@ public class Offers extends Controller {
 		acceptance.executed = true;
 		acceptance.executionTime = new Date();
 		acceptance.save();
-		pay(acceptance);
+		new DwollaTransfer().pay(acceptance);
 		renderJSON(acceptance);
 	}
 	
-    private static void pay(Acceptance acceptance) {
-    	String infoUrl = "https://www.dwolla.com/oauth/rest/users/?oauth_token=" + acceptance.acceptor.dwollaAccessToken;
-    	HttpResponse httpResponse = WS.url(infoUrl).get();
-    	DwollaInfoResponse fromJson = new Gson().fromJson(httpResponse.getString(), DwollaInfoResponse.class);
-    	DwollaSendRequest dsr = new DwollaSendRequest();
-    	//dsr.destinationId = fromJson.Response.Id;
-    	//Use reflection id for testing
-    	dsr.destinationId="812-713-9234";
-    	dsr.amount = acceptance.offer.price;
-    	dsr.pin = acceptance.offer.pin;
-    	String dwollaUrl = "https://www.dwolla.com/oauth/rest/transactions/send?oauth_token=" + acceptance.offer.owner.dwollaAccessToken;
-    	String json = new Gson().toJson(dsr);
-    	Map<String, String> headers = new HashMap<String, String>();
-    	headers.put("Content-Type", "application/json");
-		HttpResponse post = WS.url(dwollaUrl).body(json).headers(headers).post();
-		DwollaResponse response = new Gson().fromJson(post.getString(), DwollaResponse.class);
-		if (response.Success) {
-			acceptance.paidTime = new Date();
-			acceptance.paid = true;
-			acceptance.update();
-		} 
-	}
+
 
 	static Query<User> all() {
         return Model.all(User.class);

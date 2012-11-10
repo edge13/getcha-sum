@@ -15,6 +15,7 @@ public class User extends Model {
 	public String password;
 	public String token;
 	public String dwollaAccessToken;
+	public String dwollaName;
 	public String singlyAccount;
 	public String singlyAccessToken;
 	public List<Alias> aliases = new ArrayList<Alias>();

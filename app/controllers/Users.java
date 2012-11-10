@@ -1,0 +1,38 @@
+package controllers;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.UUID;
+
+import models.User;
+import play.mvc.Controller;
+import siena.Model;
+import siena.Query;
+
+import com.google.gson.Gson;
+
+public class Users extends Controller {
+
+	protected static User parseJSON(InputStream in) {
+		return new Gson().fromJson(new InputStreamReader(in), User.class);
+	}
+
+	public static void create() {
+		User user = parseJSON(request.body);
+		user.insert();
+		renderJSON(user);
+	}
+	
+    static Query<User> all() {
+        return Model.all(User.class);
+    }
+	
+	public static void login() {
+		User user = parseJSON(request.body);
+		User authenticatedUser = all().filter("email", user.email).filter("password", user.password).get();
+		authenticatedUser.token = UUID.randomUUID();
+		
+		renderJSON("{\"token\" : \"" + authenticatedUser.token + "\"}");
+	}
+
+}

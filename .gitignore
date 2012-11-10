@@ -1,0 +1,11 @@
+.classpath
+.project
+.settings/
+eclipse/
+tmp/
+modules/
+modules/*
+/lib/
+precompiled/
+war/
+target/

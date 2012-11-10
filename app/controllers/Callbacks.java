@@ -43,16 +43,10 @@ public class Callbacks extends Controller {
 		String secret = "e63f21cef015be2bfdd94ce5282f8cce";
 		String uri = "https://api.singly.com/oauth/access_token";
 		String body = "{\"client_id\" : \"" +  key + "\", \"client_secret\" : \"" + secret + "\", \"code\" : \"" + code + "\"}";
-		System.out.println(body);
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Content-Type", "application/json");
 		HttpResponse httpResponse = WS.url(uri).body(body).headers(headers).post();
-		System.out.println("Post complete");
-		System.out.println(httpResponse.getStatus());
-		System.out.println(httpResponse.getStatusText());
 		String json = httpResponse.getString();
-		System.out.println("JSON");
-		System.out.println(json);
 		SinglyAuth fromJson = new Gson().fromJson(json, SinglyAuth.class);
 		User authenticatedUser = all().filter("token", token).get();
 		authenticatedUser.singlyAccessToken = fromJson.access_token;

@@ -3,6 +3,8 @@ package controllers;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
@@ -38,17 +40,11 @@ public class Offers extends Controller {
 		renderJSON(Model.all(Offer.class).fetch());
 	}
 	
-	public static void accept(Long id) {
+	public static void accept(Long id) throws Exception {
 		String token = request.headers.get("authorization").values.get(0);
-		System.out.println(token);
-		List<User> fetch = all().fetch();
-		for (User user : fetch) {
-			System.out.println(user.name);
-			System.out.println(user.token);
-		}
 		User user = all().filter("token", token.replaceAll("\"", "")).get();
 		Offer offer = Model.all(Offer.class).filter("id", id).get();
-		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to=twitter&body=Test";
+		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
 		HttpResponse post = WS.url(url).post();
 		Acceptance acceptance = new Acceptance();
 		acceptance.acceptor = user;
@@ -56,8 +52,11 @@ public class Offers extends Controller {
 		acceptance.executed = true;
 		acceptance.executionTime = new Date();
 		acceptance.save();
-		new DwollaTransfer().pay(acceptance);
 		renderJSON(acceptance);
+	}
+	
+	public static void acceptances() {
+		renderJSON(Model.all(Acceptance.class).fetch());
 	}
 	
 

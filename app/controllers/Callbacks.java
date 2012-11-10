@@ -40,6 +40,7 @@ public class Callbacks extends Controller {
 	}
 	
 	public static void singly(String token) {
+		System.out.println("Singly callback");
 		String code = params.get("code");
 		String key = "54e441cddf0c4c2cf1bc54de317913df";
 		String secret = "e63f21cef015be2bfdd94ce5282f8cce";
@@ -54,6 +55,7 @@ public class Callbacks extends Controller {
 		authenticatedUser.singlyAccessToken = fromJson.access_token;
 		authenticatedUser.singlyAccount = fromJson.account;
 		authenticatedUser.update();
+		System.out.println(fromJson.access_token);
 		renderText(fromJson.access_token);
 	}
 	

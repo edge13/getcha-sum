@@ -13,6 +13,7 @@ GET     /public/                                staticDir:public
 
 POST	/users									Users.create
 POST	/users/login							Users.login
+GET		/users									Users.getAll
 GET		/users/me/offers						Users.offers
 GET		/users/me								Users.me
 
@@ -20,9 +21,13 @@ POST	/offers									Offers.create
 GET		/offers									Offers.getAll
 POST	/offers/{id}/accept						Offers.accept
 
+GET		/acceptances							Acceptances.getAll
+
 
 GET		/callbacks/dwolla/{token}				Callbacks.dwolla
 GET		/callbacks/singly/{token}				Callbacks.singly
+
+GET		/jobs/pay								Jobs.pay
 
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

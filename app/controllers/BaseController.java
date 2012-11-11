@@ -21,6 +21,9 @@ public class BaseController extends Controller {
 	public static User getUser() {
 		String token = request.headers.get("authorization").values.get(0);
 		User owner = Model.all(User.class).filter("token", token.replaceAll("\"", "")).get();
+		if (owner == null) {
+			badRequest("Unable to connect to your account. Please login again");
+		}
 		return owner;
 	}
 	

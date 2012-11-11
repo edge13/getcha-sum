@@ -116,7 +116,7 @@ public class Users extends BaseController {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}			
 		}
 		return user;
 	}

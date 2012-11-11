@@ -179,7 +179,6 @@ public class Offers extends BaseController {
 			renderJSON(singlyResponse.getAsJsonObject().get("errors").toString());
 		} else {
 			String executionId = "";
-			System.out.println(singlyResponse);
 			if ("tumblr".equals(offer.type.toLowerCase())) {
 				executionId = singlyResponse.getAsJsonObject().get("response").getAsJsonObject().get("id").getAsString();
 			} else {
@@ -197,17 +196,11 @@ public class Offers extends BaseController {
 	}
 
 	private static String getTo(User user, Offer offer) {
-		System.out.println("getTo");
-		System.out.println(offer.type.toLowerCase());
 		if ("tumblr".equals(offer.type.toLowerCase())) {
-			System.out.println("in if");
 			user = getAliases(user);
 			List<Alias> aliases = user.aliases;
-			System.out.println(user.aliases);
 			for (Alias alias : aliases) {
-				System.out.println(alias.name);
 				if ("tumblr".equals(alias.service)) {
-					System.out.println(alias.name + "@tumblr");
 					return alias.name + "@tumblr";
 				}
 			}

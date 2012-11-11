@@ -77,7 +77,7 @@ public class Offers extends BaseController {
 			offer.type = offer.type.toLowerCase();
 			offer.insert();
 			Pusher pusher = new Pusher("31467", "02db6f66ade3c8ea02f1", "b6bfb5a2541fb7c96bce");
-			HttpResponse response = pusher.trigger("PROGO_OFFER", "CREATE", offer.id.toString());
+			HttpResponse response = pusher.trigger("PROGO_OFFER", "CREATE", new Gson().toJson(offer));
 			renderJSON(offer);
 		} else {
 			Logger.error("Dwolla validation failed");

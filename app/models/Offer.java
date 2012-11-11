@@ -24,4 +24,6 @@ public class Offer extends Model {
 	public String pin;
 
 	public int acceptedCount;
+
+	public boolean eligible;
 }

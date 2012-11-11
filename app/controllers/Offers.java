@@ -24,7 +24,7 @@ import com.google.gson.JsonElement;
 
 import dwolla.DwollaTransfer;
 
-public class Offers extends Controller {
+public class Offers extends BaseController {
 
 	protected static Offer parseJSON(InputStream in) {
 		return new Gson().fromJson(new InputStreamReader(in), Offer.class);
@@ -42,20 +42,33 @@ public class Offers extends Controller {
 	public static void getAll() {
 		List<Offer> offers = Model.all(Offer.class).fetch();
 		for (Offer offer : offers) {
-			offer.acceptedCount = getAccepances(offer);
+			offer.acceptedCount = getAcceptances(offer);
+			offer.eligible = getEligible(offer, getUser());
 		}
 		renderJSON(offers);
 	}
 
-	private static int getAccepances(Offer offer) {
+	private static boolean getEligible(Offer offer, User user) {
+		int count = Model.all(Acceptance.class).filter("offer", offer).filter("acceptor", user).count();
+		return count == 0;
+	}
+
+	private static int getAcceptances(Offer offer) {
 		return Model.all(Acceptance.class).filter("offer", offer).count();
 	}
 	
 	public static void accept(Long id) throws Exception {
-		String token = request.headers.get("authorization").values.get(0);
-		User user = all().filter("token", token.replaceAll("\"", "")).get();
+		User user = getUser();
 		Offer offer = Model.all(Offer.class).filter("id", id).get();
-		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8")+"abcd";
+		if (!getEligible(offer, user)) {
+			response.status = StatusCode.BAD_REQUEST;
+			renderJSON("{\"error\": \"You are ineligible for this offer.\"}");
+		}
+		if (offer.cap <= getAcceptances(offer)) {
+			response.status = StatusCode.BAD_REQUEST;
+			renderJSON("{\"error\": \"This offer has already reached its limit.\"}");
+		}
+		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
 		HttpResponse post = WS.url(url).post();
 		JsonElement twitter = post.getJson().getAsJsonObject().get("twitter");
 		if (twitter.getAsJsonObject().get("errors") != null) {

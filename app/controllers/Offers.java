@@ -1,11 +1,11 @@
 package controllers;
 
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ public class Offers extends BaseController {
 	protected static Offer parseJSON(InputStream in) {
 		return new Gson().fromJson(new InputStreamReader(in), Offer.class);
 	}
-	
+
 	public static List<String> getOfferTypes() {
 		List<String> offerTypes = new ArrayList<String>();
 		offerTypes.add("twitter");
@@ -56,20 +56,20 @@ public class Offers extends BaseController {
 		}
 		if (StringUtils.isBlank(offer.content)) {
 			badRequest("Content is required.");
-		}		
+		}
 		if (StringUtils.isBlank(offer.content)) {
 			badRequest("Name is required.");
-		}				
+		}
 		if (offer.price == null || offer.price == 0) {
 			badRequest("Price is required.");
-		}		
+		}
 		if (offer.cap == null || offer.cap < 1) {
 			badRequest("Cap is required.");
-		}				
+		}
 		if (StringUtils.isBlank(offer.type) || !getOfferTypes().contains(offer.type.toLowerCase())) {
 			badRequest("Type is required.");
 		}
-		
+
 		User user = getUser();
 		Logger.info("Ready to validate dwolla account " + offer.pin + " " + user.dwollaAccessToken);
 		if (new DwollaTransfer().validate(offer, user)) {
@@ -85,7 +85,7 @@ public class Offers extends BaseController {
 			badRequest("Your dwolla account cannot be charged. Please confirm your pin/balance.");
 		}
 	}
-	
+
 	public static void getAll() {
 		List<Offer> offers = Model.all(Offer.class).fetch();
 		for (Offer offer : offers) {
@@ -116,7 +116,7 @@ public class Offers extends BaseController {
 	private static int getAcceptances(Offer offer) {
 		return Model.all(Acceptance.class).filter("offer", offer).count();
 	}
-	
+
 	public static void accept(Long id) throws Exception {
 		User user = getUser();
 		Offer offer = Model.getByKey(Offer.class, id);
@@ -129,51 +129,48 @@ public class Offers extends BaseController {
 		if ("twilio".equals(offer.type.toLowerCase())) {
 			callPromotion(user, offer);
 		} else {
-			statusPromotion(user, offer);	
+			statusPromotion(user, offer);
 		}
 	}
-	
-	public static void testCall() throws Exception {
-		Offer offer = Model.all(Offer.class).get();
-		callPromotion(null, offer);
-	}
-	
+
 	public static void twilioData(Long id) throws Exception {
 		Offer offer = Model.getByKey(Offer.class, id);
-		String xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><Response> <Say>" + offer.content + "</Say></Response>";
+		String xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><Response> <Say voice=\"woman\" language=\"en-gb\">" + offer.content + "</Say></Response>";
 		renderXml(xmlData);
 	}
-	
+
 	private static void callPromotion(User user, Offer offer) throws Exception {
 		TwilioRestClient client = new TwilioRestClient("ACf90aa80518a02f9ba75a1e91a8a0166d", "72706792b2e20203fc34b85ba3afdd36", "https://api.twilio.com");
-		 //build map of post parameters 
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("From", "+15733975737");
-        params.put("To", "+15735290404");
-        params.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
-        params.put("Method", "GET");
-        TwilioRestResponse twilioResponse;
-            twilioResponse = client.request("/2010-04-01/Accounts/"+client.getAccountSid()+"/Calls.json", "POST", params);
-            if(twilioResponse.isError()) {
-    			response.status = StatusCode.BAD_REQUEST;
-    			renderJSON("Could not make the call.");
-            } else {
-            	String sid = new Gson().fromJson(twilioResponse.getResponseText(), TwilioResponse.class).sid;
-    			Acceptance acceptance = Acceptances.parseJSON(request.body);
-    			acceptance.acceptor = user;
-    			acceptance.offer = offer;
-    			acceptance.executed = true;
-    			acceptance.executionTime = new Date();
-    			acceptance.executionId = sid;
-    			acceptance.save();
-    			renderJSON(acceptance);
-            }
+		List<String> phoneNumbers = Acceptances.parseJSON(request.body).phoneNumbers;
+		for (String phoneNumber : phoneNumbers) {
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("From", "+15733975737");
+			params.put("To", phoneNumber);
+			params.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
+			params.put("Method", "GET");
+			TwilioRestResponse twilioResponse;
+			twilioResponse = client.request("/2010-04-01/Accounts/" + client.getAccountSid() + "/Calls.json", "POST", params);
+			if (twilioResponse.isError()) {
+				response.status = StatusCode.BAD_REQUEST;
+				renderJSON("Could not make the call.");
+			} else {
+				String sid = new Gson().fromJson(twilioResponse.getResponseText(), TwilioResponse.class).sid;
+				Acceptance acceptance = new Acceptance();
+				acceptance.phoneNumbers = Arrays.asList(phoneNumber);
+				acceptance.acceptor = user;
+				acceptance.offer = offer;
+				acceptance.executed = true;
+				acceptance.executionTime = new Date();
+				acceptance.executionId = sid;
+				acceptance.save();
+				renderJSON(acceptance);
+			}
+		}
 	}
 
 	private static void statusPromotion(User user, Offer offer) throws UnsupportedEncodingException {
-		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+getTo(user, offer)+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
+		String url = "https://api.singly.com/types/statuses?access_token=" + user.singlyAccessToken + "&to=" + getTo(user, offer) + "&body=" + URLEncoder.encode(offer.content, "UTF-8");
 		JsonElement singlyResponse = WS.url(url).post().getJson().getAsJsonObject().get(offer.type.toLowerCase());
-		System.out.println(singlyResponse);
 		if (singlyResponse.getAsJsonObject().get("errors") != null) {
 			response.status = StatusCode.BAD_REQUEST;
 			renderJSON(singlyResponse.getAsJsonObject().get("errors").toString());
@@ -182,7 +179,7 @@ public class Offers extends BaseController {
 			if ("tumblr".equals(offer.type.toLowerCase())) {
 				executionId = singlyResponse.getAsJsonObject().get("response").getAsJsonObject().get("id").getAsString();
 			} else {
-				executionId = singlyResponse.getAsJsonObject().get("id").getAsString();	
+				executionId = singlyResponse.getAsJsonObject().get("id").getAsString();
 			}
 			Acceptance acceptance = new Acceptance();
 			acceptance.acceptor = user;
@@ -207,7 +204,7 @@ public class Offers extends BaseController {
 		}
 		return offer.type.toLowerCase();
 	}
-	
+
 	public static void acceptances() {
 		renderJSON(Model.all(Acceptance.class).fetch());
 	}

@@ -35,7 +35,6 @@ public class Callbacks extends Controller {
 		String url = "https://www.dwolla.com/oauth/v2/token?client_id=" + dwollaKey +"&client_secret=" + dwollaSecret + "&grant_type=authorization_code&redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8") + "&code=" + URLEncoder.encode(code, "UTF-8");
 		HttpResponse httpResponse = WS.url(url).get();
 		String json = httpResponse.getString();
-		System.out.println(json);
 		DwollaAuth fromJson = new Gson().fromJson(json, DwollaAuth.class);
 		User authenticatedUser = all().filter("token", token.replaceAll("\"", "")).get();
 		authenticatedUser.dwollaAccessToken = fromJson.access_token;
@@ -50,9 +49,7 @@ public class Callbacks extends Controller {
 	}
 	
 	public static void singly(String token) {
-		System.out.println("Singly callback");
 		String code = params.get("code");
-		System.out.println(code);
 		String key = "54e441cddf0c4c2cf1bc54de317913df";
 		String secret = "e63f21cef015be2bfdd94ce5282f8cce";
 		String uri = "https://api.singly.com/oauth/access_token";
@@ -61,13 +58,11 @@ public class Callbacks extends Controller {
 		headers.put("Content-Type", "application/json");
 		HttpResponse httpResponse = WS.url(uri).body(body).headers(headers).post();
 		String json = httpResponse.getString();
-		System.out.println(json);
 		SinglyAuth fromJson = new Gson().fromJson(json, SinglyAuth.class);
 		User authenticatedUser = all().filter("token", token.replaceAll("\"", "")).get();
 		authenticatedUser.singlyAccessToken = fromJson.access_token;
 		authenticatedUser.singlyAccount = fromJson.account;
 		authenticatedUser.update();
-		System.out.println(fromJson.access_token);
 		renderText(fromJson.access_token);
 	}
 	

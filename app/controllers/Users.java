@@ -111,8 +111,6 @@ public class Users extends BaseController {
 				JsonElement blogs = tumblrProfile.getAsJsonObject().get("data").getAsJsonObject().get("blogs");
 				if (blogs != null) {
 					JsonArray blogArray = blogs.getAsJsonArray();
-					System.out.println(blogArray.size());
-					System.out.println(blogArray.get(0).getAsJsonObject().get("name").getAsString());
 					if (blogArray.size() > 0) {
 						Alias alias = new Alias();
 						alias.service = "tumblr";

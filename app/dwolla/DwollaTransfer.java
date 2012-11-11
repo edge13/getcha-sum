@@ -54,7 +54,6 @@ public class DwollaTransfer {
 	}
     
     public boolean validate(Offer offer, User user) throws Exception {
-    	System.out.println("Time to pay");
     	DwollaSendRequest dsr = new DwollaSendRequest();
     	dsr.destinationId="812-713-9234";
     	dsr.amount = .10;

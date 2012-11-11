@@ -170,12 +170,16 @@ public class Offers extends BaseController {
 	}
 
 	private static void statusPromotion(User user, Offer offer) throws UnsupportedEncodingException {
+		if ("tumblr".equals(offer.type.toLowerCase())){
+			getAliases(user);
+		}
 		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
 		JsonElement singlyResponse = WS.url(url).post().getJson().getAsJsonObject().get(offer.type.toLowerCase());
 		if (singlyResponse.getAsJsonObject().get("errors") != null) {
 			response.status = StatusCode.BAD_REQUEST;
 			renderJSON(singlyResponse.getAsJsonObject().get("errors").toString());
 		} else {
+			System.out.println(singlyResponse.toString());
 			String executionId = singlyResponse.getAsJsonObject().get("id").getAsString();
 			Acceptance acceptance = new Acceptance();
 			acceptance.acceptor = user;

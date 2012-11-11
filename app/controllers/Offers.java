@@ -64,7 +64,7 @@ public class Offers extends BaseController {
 		}
 		
 		String token = request.headers.get("authorization").values.get(0);
-		User owner = all().filter("token", token.replaceAll("\"", "")).get();
+		User owner = Model.all(User.class).filter("token", token.replaceAll("\"", "")).get();
 		offer.owner = owner;
 		offer.type = offer.type.toLowerCase();
 		offer.insert();
@@ -82,7 +82,20 @@ public class Offers extends BaseController {
 
 	private static boolean getEligible(Offer offer, User user) {
 		int count = Model.all(Acceptance.class).filter("offer", offer).filter("acceptor", user).count();
-		return count == 0;
+		if (count > 0) {
+			return false;
+		}
+		if (!StringUtils.isBlank(offer.targetGender)) {
+			if (offer.targetGender != user.gender) {
+				return false;
+			}
+		}
+		if (offer.targetAge != null && offer.targetAge > 0) {
+			if (user.age < (offer.targetAge - 5) || (user.age > offer.targetAge + 5)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static int getAcceptances(Offer offer) {
@@ -119,10 +132,4 @@ public class Offers extends BaseController {
 	public static void acceptances() {
 		renderJSON(Model.all(Acceptance.class).fetch());
 	}
-	
-
-
-	static Query<User> all() {
-        return Model.all(User.class);
-    }
 }

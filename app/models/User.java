@@ -18,5 +18,7 @@ public class User extends Model {
 	public String dwollaName;
 	public String singlyAccount;
 	public String singlyAccessToken;
+	public String gender;
+	public Integer age;
 	public List<Alias> aliases = new ArrayList<Alias>();
 }

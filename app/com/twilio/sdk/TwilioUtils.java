@@ -36,14 +36,15 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
+import com.twilio4j.util.Base64;
+
 
 public class TwilioUtils {
     
     protected String authToken;
     protected String accountSid;
     
-    public TwilioUtils(String authToken, String accountSid){
+    TwilioUtils(String authToken, String accountSid){
         this.authToken = authToken;
         this.accountSid = accountSid;
     }
@@ -75,15 +76,17 @@ public class TwilioUtils {
             //compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(data.toString().getBytes());
            
+            // changed the base64 dependency. (broc.seib@gmail.com)
             //base64-encode the hmac
-            String signature = new String(Base64.encodeBase64(rawHmac));
+            //String signature = new String(Base64.encodeBase64(rawHmac));
+            String signature = new String(Base64.encodeToByte(rawHmac, false));
             
             return signature.equals(expectedSignature);
         } catch (NoSuchAlgorithmException e) {
-        
+            e.printStackTrace();
             return false;
         } catch (InvalidKeyException e) {
-          
+            e.printStackTrace();
             return false;
         }
     

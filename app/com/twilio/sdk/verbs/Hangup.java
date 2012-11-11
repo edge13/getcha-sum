@@ -1,7 +1,6 @@
 package com.twilio.sdk.verbs;
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -27,14 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * The Class Hangup.
- */
 public class Hangup extends Verb {
     
-    /**
-     * Instantiates a new hangup.
-     */
     public Hangup() {
         super(V_HANGUP, null);
         this.allowedVerbs = null;

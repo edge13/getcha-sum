@@ -1,16 +1,8 @@
-package com.twilio.sdk.examples;
+package com.twilio.sdk.verbs;
 
-import com.twilio.sdk.verbs.TwiMLResponse;
-import com.twilio.sdk.verbs.TwiMLException;
-import com.twilio.sdk.verbs.Say;
-import com.twilio.sdk.verbs.Redirect;
-import com.twilio.sdk.verbs.Gather;
-import com.twilio.sdk.verbs.Dial;
-import com.twilio.sdk.verbs.Conference;
 
-// TODO: Auto-generated Javadoc
 /*
-Copyright (c) 2012 Twilio, Inc.
+Copyright (c) 2008 Twilio, Inc.
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -35,16 +27,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-/**
- * The Class TwiMLResponseExample.
- */
 public class TwiMLResponseExample {
     
-    /**
-     * The main method.
-     *
-     * @param args the arguments
-     */
     public static void main(String[] args){
         // Say, Dial, and Play
         TwiMLResponse response = new TwiMLResponse();
@@ -80,9 +64,6 @@ public class TwiMLResponseExample {
         // Conference
         response = new TwiMLResponse();
         Dial dial = new Dial();
-        dial.setCallerId("5555555555");
-        dial.setAction("foo");
-        dial.setHangupOnStar(true);
         Conference conf = new Conference("MyRoom");
         conf.setBeep(true); 
         
@@ -103,6 +84,20 @@ public class TwiMLResponseExample {
         
         try {
             response.append(redirect);
+        } catch (TwiMLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(response.toXML());
+        
+        // Set an arbitrary attribute / value pair
+        response = new TwiMLResponse();
+        
+        Reject reject = new Reject();
+        reject.setReason("busy");
+        
+        try {
+            response.append(reject);
         } catch (TwiMLException e) {
             e.printStackTrace();
         }

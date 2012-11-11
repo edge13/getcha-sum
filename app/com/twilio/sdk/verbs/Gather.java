@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -30,14 +29,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * The Class Gather.
- */
 public class Gather extends Verb {
     
-    /**
-     * Instantiates a new gather.
-     */
     public Gather() {
         super(V_GATHER, null);
         this.allowedVerbs = new ArrayList<String>();
@@ -46,47 +39,22 @@ public class Gather extends Verb {
         this.allowedVerbs.add(Verb.V_PAUSE);
     }
 
-    /**
-     * Sets the action.
-     *
-     * @param url the new action
-     */
     public void setAction(String url){
        this.set("action", url);   
     }
     
-    /**
-     * Sets the method.
-     *
-     * @param method the new method
-     */
     public void setMethod(String method){
        this.set("method", method);   
     }
     
-    /**
-     * Sets the timeout.
-     *
-     * @param i the new timeout
-     */
     public void setTimeout(int i){
        this.set("timeout", Integer.toString(i));   
     }
     
-    /**
-     * Sets the finish on key.
-     *
-     * @param key the new finish on key
-     */
     public void setFinishOnKey(String key){
        this.set("finishOnKey", key);   
     }
     
-    /**
-     * Sets the num digits.
-     *
-     * @param i the new num digits
-     */
     public void setNumDigits(int i){
        this.set("numDigits", Integer.toString(i));   
     }

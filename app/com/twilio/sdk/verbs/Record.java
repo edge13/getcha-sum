@@ -1,7 +1,6 @@
 package com.twilio.sdk.verbs;
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -27,69 +26,33 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * The Class Record.
- */
 public class Record extends Verb {
     
-    /**
-     * Instantiates a new record.
-     */
     public Record() {
         super(V_RECORD, null);
         this.allowedVerbs = null;
     }
 
-    /**
-     * Sets the action.
-     *
-     * @param url the new action
-     */
     public void setAction(String url){
        this.set("action", url);   
     }
     
-    /**
-     * Sets the method.
-     *
-     * @param method the new method
-     */
     public void setMethod(String method){
        this.set("method", method);   
     }
     
-    /**
-     * Sets the timeout.
-     *
-     * @param i the new timeout
-     */
     public void setTimeout(int i){
        this.set("timeout", Integer.toString(i));   
     }
     
-    /**
-     * Sets the finish on key.
-     *
-     * @param key the new finish on key
-     */
     public void setFinishOnKey(String key){
        this.set("finishOnKey", key);   
     }
     
-    /**
-     * Sets the max length.
-     *
-     * @param i the new max length
-     */
     public void setMaxLength(int i){
        this.set("maxLength", Integer.toString(i));   
     }
     
-    /**
-     * Sets the transcribe.
-     *
-     * @param f the new transcribe
-     */
     public void setTranscribe(boolean f){
        if(f)
            this.set("transcribe", "true");  
@@ -97,11 +60,6 @@ public class Record extends Verb {
            this.set("transcribe", "false"); 
     }
     
-    /**
-     * Sets the transcribe callback.
-     *
-     * @param url the new transcribe callback
-     */
     public void setTranscribeCallback(String url){
        this.set("transcribeCallback", url);    
     }    

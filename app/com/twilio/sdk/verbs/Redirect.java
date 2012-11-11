@@ -3,7 +3,6 @@ package com.twilio.sdk.verbs;
 
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -29,34 +28,18 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * The Class Redirect.
- */
 public class Redirect extends Verb {
     
-    /**
-     * Instantiates a new redirect.
-     */
     public Redirect() {
         super(V_REDIRECT, null);
         this.allowedVerbs = null;
     }
     
-    /**
-     * Instantiates a new redirect.
-     *
-     * @param url the url
-     */
     public Redirect(String url) {
         super(V_REDIRECT, url);
         this.allowedVerbs = null;
     }
     
-    /**
-     * Sets the method.
-     *
-     * @param method the new method
-     */
     public void setMethod(String method){
        this.set("method", method);   
     }

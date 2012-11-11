@@ -10,3 +10,5 @@ precompiled/
 war/
 target/
 logs/
+.svn
+.DS_Store

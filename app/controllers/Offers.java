@@ -29,9 +29,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
-import com.twilio.sdk.resource.factory.CallFactory;
-import com.twilio.sdk.resource.instance.Account;
-import com.twilio.sdk.resource.instance.Call;
+import com.twilio.sdk.TwilioRestResponse;
+
 
 import dwolla.DwollaTransfer;
 
@@ -120,7 +119,7 @@ public class Offers extends BaseController {
 	
 	public static void accept(Long id) throws Exception {
 		User user = getUser();
-		Offer offer = Model.all(Offer.class).filter("id", id).get();
+		Offer offer = Model.getByKey(Offer.class, id);
 		if (!getEligible(offer, user)) {
 			badRequest("You are ineligible for this offer.");
 		}
@@ -135,26 +134,43 @@ public class Offers extends BaseController {
 	}
 	
 	public static void testCall() throws Exception {
-		callPromotion(null, null);
+		Offer offer = Model.all(Offer.class).get();
+		callPromotion(null, offer);
 	}
 	
-	public static void twilioData(Long offerId) throws Exception {
-		Offer offer = Model.all(Offer.class).filter("id", offerId).get();
+	public static void twilioData(Long id) throws Exception {
+		Offer offer = Model.getByKey(Offer.class, id);
 		String xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><Response> <Say>" + offer.content + "</Say></Response>";
 		renderXml(xmlData);
 	}
 	
 	private static void callPromotion(User user, Offer offer) throws Exception {
-		TwilioRestClient client = new TwilioRestClient("ACf90aa80518a02f9ba75a1e91a8a0166d", "72706792b2e20203fc34b85ba3afdd36");
-		Account mainAccount = client.getAccount();
-		CallFactory callFactory = mainAccount.getCallFactory();
-	    Map<String, String> callParams = new HashMap<String, String>();
-	    callParams.put("To", "+15735290404");
-	    callParams.put("From", "+15733975737");
-	    callParams.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
-	    callParams.put("Method", "GET");
-	    Call call = callFactory.create(callParams);
-	    System.out.println(call.getSid());
+		TwilioRestClient client = new TwilioRestClient("ACf90aa80518a02f9ba75a1e91a8a0166d", "72706792b2e20203fc34b85ba3afdd36", "https://api.twilio.com");
+		 //build map of post parameters 
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("From", "+15733975737");
+        params.put("To", "+15735290404");
+        params.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
+        params.put("Method", "GET");
+        TwilioRestResponse response;
+        try {
+            response = client.request("/2010-04-01/Accounts/"+client.getAccountSid()+"/Calls", "POST", params);
+            if(response.isError())
+                System.out.println("Error making outgoing call: "+response.getHttpStatus()+"\n"+response.getResponseText());
+            else {
+                System.out.println(response.getResponseText());
+            }
+        } catch (TwilioRestException e) {
+            e.printStackTrace();
+        }
+//		CallFactory callFactory = mainAccount.getCallFactory();
+//	    Map<String, String> callParams = new HashMap<String, String>();
+//	    callParams.put("To", "+15735290404"); // Replace with a valid phone number
+//	    callParams.put("From", "+15733975737");
+//	    callParams.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
+//	    callParams.put("Method", "GET");
+//	    Call call = callFactory.create(callParams);
+//	    System.out.println(call.getSid());
 	}
 
 	private static void statusPromotion(User user, Offer offer) throws UnsupportedEncodingException {

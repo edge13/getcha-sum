@@ -1,7 +1,6 @@
 package com.twilio.sdk.verbs;
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -27,26 +26,13 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * The Class Play.
- */
 public class Play extends Verb {
     
-    /**
-     * Instantiates a new play.
-     *
-     * @param body the body
-     */
     public Play(String body) {
         super("Play", body);
         this.allowedVerbs = null;
     }
 
-    /**
-     * Sets the loop.
-     *
-     * @param i the new loop
-     */
     public void setLoop(int i){
        this.set("loop", Integer.toString(i));   
     }

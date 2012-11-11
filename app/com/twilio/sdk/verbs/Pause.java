@@ -1,7 +1,6 @@
 package com.twilio.sdk.verbs;
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -27,24 +26,13 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * The Class Pause.
- */
 public class Pause extends Verb {
     
-    /**
-     * Instantiates a new pause.
-     */
     public Pause() {
         super(V_PAUSE, null);
         this.allowedVerbs = null;
     }
 
-    /**
-     * Sets the length.
-     *
-     * @param i the new length
-     */
     public void setLength(int i){
         this.set("length", Integer.toString(i));   
      }

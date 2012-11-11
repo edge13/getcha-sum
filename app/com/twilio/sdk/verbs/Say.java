@@ -1,7 +1,6 @@
 package com.twilio.sdk.verbs;
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -28,44 +27,21 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-/**
- * The Class Say.
- */
 public class Say extends Verb {
     
-    /**
-     * Instantiates a new say.
-     *
-     * @param body the body
-     */
     public Say(String body) {
         super(V_SAY, body);
         this.allowedVerbs = null;
     }
 
-    /**
-     * Sets the loop.
-     *
-     * @param i the new loop
-     */
     public void setLoop(int i){
         this.set("loop", Integer.toString(i));   
     }
     
-    /**
-     * Sets the language.
-     *
-     * @param str the new language
-     */
     public void setLanguage(String str){
         this.set("language", str);   
     }
     
-    /**
-     * Sets the voice.
-     *
-     * @param str the new voice
-     */
     public void setVoice(String str){
         this.set("voice", str);   
     }

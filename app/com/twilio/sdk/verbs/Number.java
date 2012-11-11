@@ -2,7 +2,6 @@ package com.twilio.sdk.verbs;
 
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -28,46 +27,19 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/**
- * The Class Number.
- */
 public class Number extends Verb {
     
-    /**
-     * Instantiates a new number.
-     *
-     * @param number the number
-     */
     public Number(String number) {
         super(V_NUMBER, number);
         this.allowedVerbs = null;
     }
 
-    /**
-     * Sets the send digits.
-     *
-     * @param digits the new send digits
-     */
     public void setSendDigits(String digits){
        this.set("sendDigits", digits);   
     }
     
-    /**
-     * Sets the url.
-     *
-     * @param url the new url
-     */
     public void setUrl(String url){
-       this.set("url", url);
-    }
-
-    /**
-     * Sets the method.
-     *
-     * @param method the HTTP method to use when requesting the url
-     */
-    public void setMethod(String method){
-       this.set("method", method);
+       this.set("url", url);   
     }
 
 }

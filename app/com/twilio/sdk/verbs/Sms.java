@@ -1,7 +1,6 @@
 package com.twilio.sdk.verbs;
 
 
-// TODO: Auto-generated Javadoc
 /*
 Copyright (c) 2008 Twilio, Inc.
 
@@ -28,62 +27,29 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-/**
- * The Class Sms.
- */
 public class Sms extends Verb {
     
-    /**
-     * Instantiates a new sms.
-     *
-     * @param message the message
-     */
     public Sms(String message) {
         super(V_SMS, message);
         this.allowedVerbs = null;
     }
 
-    /**
-     * Sets the to.
-     *
-     * @param str the new to
-     */
     public void setTo(String str){
         this.set("to", str);
     }
     
-    /**
-     * Sets the from.
-     *
-     * @param str the new from
-     */
     public void setFrom(String str){
         this.set("from", str);   
     }
     
-    /**
-     * Sets the method.
-     *
-     * @param method the new method
-     */
     public void setMethod(String method){
        this.set("method", method);   
     }
     
-    /**
-     * Sets the action.
-     *
-     * @param url the new action
-     */
     public void setAction(String url){
        this.set("action", url);
     }
     
-    /**
-     * Sets the status callback.
-     *
-     * @param url the new status callback
-     */
     public void setStatusCallback(String url){
        this.set("statusCallback", url);   
     }

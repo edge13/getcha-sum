@@ -30,8 +30,8 @@ public class DwollaTransfer {
     	dsr.destinationId="812-713-9234";
     	dsr.amount = acceptance.offer.price;
     	dsr.pin = acceptance.offer.pin;
-    	Offer offer = Model.all(Offer.class).filter("id", acceptance.offer.id).get();
-    	User owner = Model.all(User.class).filter("id", offer.owner.id).get();
+    	Offer offer = Model.getByKey(Offer.class, acceptance.offer.id);
+    	User owner = Model.getByKey(User.class, offer.owner.id);
     	if (owner != null && owner.dwollaAccessToken != null) {
 	    	String dwollaUrl = "https://www.dwolla.com/oauth/rest/transactions/send?oauth_token=" + URLEncoder.encode(owner.dwollaAccessToken, "UTF-8");
 	    	String json = new Gson().toJson(dsr);

@@ -32,6 +32,7 @@ GET		/callbacks/dwolla/{token}				Callbacks.dwolla
 GET		/callbacks/singly/{token}				Callbacks.singly
 
 GET		/jobs/pay								Jobs.pay
+GET		/jobs/pay/{id}							Jobs.payOne
 
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

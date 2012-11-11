@@ -21,6 +21,7 @@ import models.twilio.TwilioResponse;
 import play.Logger;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
+import play.modules.pusher.Pusher;
 import play.mvc.Controller;
 import play.mvc.Http.StatusCode;
 import siena.Model;
@@ -79,12 +80,13 @@ public class Offers extends BaseController {
 			offer.owner = user;
 			offer.type = offer.type.toLowerCase();
 			offer.insert();
+			Pusher pusher = new Pusher("31467", "02db6f66ade3c8ea02f1", "b6bfb5a2541fb7c96bce");
+			HttpResponse response = pusher.trigger("PROGO_OFFER", "CREATE", offer.id.toString());
 			renderJSON(offer);
 		} else {
 			Logger.error("Dwolla validation failed");
 			badRequest("Your dwolla account cannot be charged. Please confirm your pin/balance.");
 		}
-		
 	}
 	
 	public static void getAll() {
@@ -169,14 +171,6 @@ public class Offers extends BaseController {
     			acceptance.save();
     			renderJSON(acceptance);
             }
-//		CallFactory callFactory = mainAccount.getCallFactory();
-//	    Map<String, String> callParams = new HashMap<String, String>();
-//	    callParams.put("To", "+15735290404"); // Replace with a valid phone number
-//	    callParams.put("From", "+15733975737");
-//	    callParams.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
-//	    callParams.put("Method", "GET");
-//	    Call call = callFactory.create(callParams);
-//	    System.out.println(call.getSid());
 	}
 
 	private static void statusPromotion(User user, Offer offer) throws UnsupportedEncodingException {

@@ -4,6 +4,7 @@ require:
     - play
     - play -> gae 1.6.0
     - play -> siena 2.0.6
+    - play -> pusher 0.1
     - commons-lang 2.6
     - org.codehaus.jackson -> jackson-core-asl 1.9.9
     - org.codehaus.jackson -> jackson-mapper-asl 1.9.9

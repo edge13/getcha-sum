@@ -162,7 +162,7 @@ public class Offers extends BaseController {
 				acceptance.executed = true;
 				acceptance.executionTime = new Date();
 				acceptance.executionId = sid;
-				acceptance.save();
+				acceptance.insert();
 				renderJSON(acceptance);
 			}
 		}
@@ -178,6 +178,8 @@ public class Offers extends BaseController {
 			String executionId = "";
 			if ("tumblr".equals(offer.type.toLowerCase())) {
 				executionId = singlyResponse.getAsJsonObject().get("response").getAsJsonObject().get("id").getAsString();
+			}else if ("linkedin".equals(offer.type.toLowerCase())) {
+				executionId = singlyResponse.getAsJsonObject().get("location").getAsString();
 			} else {
 				executionId = singlyResponse.getAsJsonObject().get("id").getAsString();
 			}

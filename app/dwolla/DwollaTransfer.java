@@ -1,6 +1,5 @@
 package dwolla;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,22 +22,27 @@ import com.google.gson.Gson;
 
 public class DwollaTransfer {
     public void pay(Acceptance acceptance) throws Exception {
-    	System.out.println("Time to pay");
     	DwollaSendRequest dsr = new DwollaSendRequest();
-    	//dsr.destinationId = getInfo(acceptance.acceptor.dwollaAccessToken).Id;
-    	//Use reflection id for testing
     	Offer offer = Model.getByKey(Offer.class, acceptance.offer.id);
     	User owner = Model.getByKey(User.class, offer.owner.id);
+    	//User acceptor = Model.getByKey(User.class, acceptance.acceptor.id);
+    	//dsr.destinationId = getInfo(acceptor.dwollaAccessToken).Id;
+    	//Use reflection id for testing    	
     	dsr.destinationId="812-713-9234";
-    	dsr.amount = (offer.price.doubleValue()/100.00);
-    	dsr.pin = acceptance.offer.pin;
+    	dsr.amount = Math.max((offer.price.doubleValue()/100.00), 0.01);
+    	if (dsr.amount >= 10) {
+    		dsr.facilitatorAmount = 0.2;
+    	} else if (dsr.amount >=5 && dsr.amount < 10) {
+    		dsr.facilitatorAmount = 0.1;
+    	} else {
+    		dsr.facilitatorAmount = 0.0;
+    	}
+    	dsr.pin = offer.pin;
     	if (owner != null && owner.dwollaAccessToken != null) {
 	    	String dwollaUrl = "https://www.dwolla.com/oauth/rest/transactions/send?oauth_token=" + URLEncoder.encode(owner.dwollaAccessToken, "UTF-8");
 	    	String json = new Gson().toJson(dsr);
 	    	Map<String, String> headers = new HashMap<String, String>();
 	    	headers.put("Content-Type", "application/json");
-			System.out.println(dwollaUrl);
-			System.out.println(json);
 			HttpResponse post = WS.url(dwollaUrl).body(json).headers(headers).post();
 			DwollaResponse response = new Gson().fromJson(post.getString(), DwollaResponse.class);
 			if (response.Success) {
@@ -47,13 +51,14 @@ public class DwollaTransfer {
 				acceptance.paid = true;
 				acceptance.update();
 			}else {
+				System.out.println(post.getString());
 				System.out.println("failure");
 				System.out.println(response.Message);
 			}
     	}
 	}
-    
-    public boolean validate(Offer offer, User user) throws Exception {
+
+	public boolean validate(Offer offer, User user) throws Exception {
     	DwollaSendRequest dsr = new DwollaSendRequest();
     	dsr.destinationId="812-713-9234";
     	dsr.amount = .10;

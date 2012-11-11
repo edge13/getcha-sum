@@ -8,7 +8,9 @@ import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -25,6 +27,11 @@ import siena.Query;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.twilio.sdk.TwilioRestClient;
+import com.twilio.sdk.TwilioRestException;
+import com.twilio.sdk.resource.factory.CallFactory;
+import com.twilio.sdk.resource.instance.Account;
+import com.twilio.sdk.resource.instance.Call;
 
 import dwolla.DwollaTransfer;
 
@@ -40,6 +47,7 @@ public class Offers extends BaseController {
 		offerTypes.add("facebook");
 		offerTypes.add("linkedin");
 		offerTypes.add("tumblr");
+		offerTypes.add("twilio");
 		return offerTypes;
 	}
 
@@ -119,6 +127,37 @@ public class Offers extends BaseController {
 		if (offer.cap <= getAcceptances(offer)) {
 			badRequest("This offer has already reached its limit.");
 		}
+		if ("twilio".equals(offer.type.toLowerCase())) {
+			callPromotion(user, offer);
+		} else {
+			statusPromotion(user, offer);	
+		}
+	}
+	
+	public static void testCall() throws Exception {
+		callPromotion(null, null);
+	}
+	
+	public static void twilioData(Long offerId) throws Exception {
+		Offer offer = Model.all(Offer.class).filter("id", offerId).get();
+		String xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><Response> <Say>" + offer.content + "</Say></Response>";
+		renderXml(xmlData);
+	}
+	
+	private static void callPromotion(User user, Offer offer) throws Exception {
+		TwilioRestClient client = new TwilioRestClient("ACf90aa80518a02f9ba75a1e91a8a0166d", "72706792b2e20203fc34b85ba3afdd36");
+		Account mainAccount = client.getAccount();
+		CallFactory callFactory = mainAccount.getCallFactory();
+	    Map<String, String> callParams = new HashMap<String, String>();
+	    callParams.put("To", "+15735290404");
+	    callParams.put("From", "+15733975737");
+	    callParams.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
+	    callParams.put("Method", "GET");
+	    Call call = callFactory.create(callParams);
+	    System.out.println(call.getSid());
+	}
+
+	private static void statusPromotion(User user, Offer offer) throws UnsupportedEncodingException {
 		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
 		JsonElement singlyResponse = WS.url(url).post().getJson().getAsJsonObject().get(offer.type.toLowerCase());
 		if (singlyResponse.getAsJsonObject().get("errors") != null) {

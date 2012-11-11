@@ -23,6 +23,10 @@ POST	/offers/{id}/accept						Offers.accept
 
 GET		/acceptances							Acceptances.getAll
 
+GET		/testCall								Offers.testCall
+
+GET		/offers/{id}/twilio						Offers.twilioData
+
 
 GET		/callbacks/dwolla/{token}				Callbacks.dwolla
 GET		/callbacks/singly/{token}				Callbacks.singly

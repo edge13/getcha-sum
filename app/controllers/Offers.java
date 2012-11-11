@@ -62,11 +62,11 @@ public class Offers extends BaseController {
 		Offer offer = Model.all(Offer.class).filter("id", id).get();
 		if (!getEligible(offer, user)) {
 			response.status = StatusCode.BAD_REQUEST;
-			renderJSON("{\"error\": \"You are ineligible for this offer.\"}");
+			renderJSON("You are ineligible for this offer.");
 		}
 		if (offer.cap <= getAcceptances(offer)) {
 			response.status = StatusCode.BAD_REQUEST;
-			renderJSON("{\"error\": \"This offer has already reached its limit.\"}");
+			renderJSON("This offer has already reached its limit.");
 		}
 		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
 		HttpResponse post = WS.url(url).post();

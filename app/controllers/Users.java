@@ -8,11 +8,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 
 import models.Alias;
 import models.Offer;
 import models.User;
 import models.dwolla.MemberInfo;
+import play.libs.Mail;
 import play.libs.WS;
 import siena.Model;
 import siena.Query;
@@ -34,10 +37,16 @@ public class Users extends BaseController {
 		renderJSON(all().fetch());
 	}
 
-	public static void create() {
+	public static void create() throws Exception {
 		User user = parseJSON(request.body);
 		user.email = user.email.toLowerCase();
 		user.insert();
+		SimpleEmail email = new SimpleEmail();
+		email.setFrom("adam.n.england@gmail.com");
+		email.addTo(user.email);
+		email.setSubject("Welcome to Getcha $um");
+		email.setMsg("Thanks for joining us at Getcha $um.  Whether you are here to make some cash or promote your social media more organically, welcome aboard.");
+		Mail.send(email); 
 		renderJSON(user);
 	}
 

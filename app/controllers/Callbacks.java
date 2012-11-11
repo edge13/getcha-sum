@@ -7,9 +7,12 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.mail.SimpleEmail;
+
 import models.DwollaAuth;
 import models.SinglyAuth;
 import models.User;
+import play.libs.Mail;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 import play.mvc.Controller;
@@ -25,9 +28,7 @@ public class Callbacks extends Controller {
 	}
 
 	public static void dwolla(String token) throws Exception {
-		System.out.println("Dwolla callback");
 		String code = params.get("code");
-		System.out.println("Dwolla callback " + code);
 		String dwollaKey = URLEncoder.encode("ApS2lLgIfKNXE4BbkuMS3rSs40XyEXvFqlc72nqJ9kTm7Tmrm6", "UTF-8");
 		String dwollaSecret = URLEncoder.encode("ruNCRxzOwCtS7oQxuhy3K6I7QJ5A9XJHAZapA5DAVMgjH0n8RO", "UTF-8");
 		String redirectUri = "http://progoserver.appspot.com/callbacks/dwolla/" + token;
@@ -39,6 +40,12 @@ public class Callbacks extends Controller {
 		User authenticatedUser = all().filter("token", token.replaceAll("\"", "")).get();
 		authenticatedUser.dwollaAccessToken = fromJson.access_token;
 		authenticatedUser.update();
+		SimpleEmail email = new SimpleEmail();
+		email.setFrom("adam.n.england@gmail.com");
+		email.addTo(authenticatedUser.email);
+		email.setSubject("Getcha $um - You are ready to promote and earn!");
+		email.setMsg("Your Dwolla account is now connected to your Getch $um account.  You are ready to begin posting social media offers, or fulfilling others social media needs");
+		Mail.send(email); 
 		renderText(fromJson.access_token);
 	}
 	

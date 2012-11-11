@@ -19,7 +19,7 @@ public class Offer extends Model {
     public String name;
 	public String content;
 	public String type;
-	public Double price;
+	public Integer price;
 	public Integer cap;
 	public String pin;
 	

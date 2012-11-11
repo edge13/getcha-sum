@@ -22,12 +22,4 @@ public class Jobs extends BaseController {
 		}
 		
 	}
-	
-	public static void payOne(Long id) throws Exception {
-		Acceptance unpaid = Model.getByKey(Acceptance.class, id);
-		boolean verify = new AcceptanceVerifier().verify(unpaid);
-		if (verify) {
-			new DwollaTransfer().pay(unpaid);
-		}
-	}
 }

@@ -40,18 +40,23 @@ public class Offers extends Controller {
 	}
 	
 	public static void getAll() {
-		renderJSON(Model.all(Offer.class).fetch());
+		List<Offer> offers = Model.all(Offer.class).fetch();
+		for (Offer offer : offers) {
+			offer.acceptedCount = getAccepances(offer);
+		}
+		renderJSON(offers);
+	}
+
+	private static int getAccepances(Offer offer) {
+		return Model.all(Acceptance.class).filter("offer", offer).count();
 	}
 	
 	public static void accept(Long id) throws Exception {
-		System.out.println("Accept offer");
 		String token = request.headers.get("authorization").values.get(0);
 		User user = all().filter("token", token.replaceAll("\"", "")).get();
 		Offer offer = Model.all(Offer.class).filter("id", id).get();
 		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8")+"abcd";
 		HttpResponse post = WS.url(url).post();
-		System.out.println(post.getStatus());
-		System.out.println(post.getString());
 		JsonElement twitter = post.getJson().getAsJsonObject().get("twitter");
 		if (twitter.getAsJsonObject().get("errors") != null) {
 			response.status = StatusCode.BAD_REQUEST;

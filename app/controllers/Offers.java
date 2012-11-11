@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import models.Acceptance;
 import models.Offer;
 import models.User;
+import models.twilio.TwilioResponse;
 import play.Logger;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
@@ -152,17 +153,22 @@ public class Offers extends BaseController {
         params.put("To", "+15735290404");
         params.put("Url", "http://progoserver.appspot.com/offers/" + offer.id + "/twilio");
         params.put("Method", "GET");
-        TwilioRestResponse response;
-        try {
-            response = client.request("/2010-04-01/Accounts/"+client.getAccountSid()+"/Calls", "POST", params);
-            if(response.isError())
-                System.out.println("Error making outgoing call: "+response.getHttpStatus()+"\n"+response.getResponseText());
-            else {
-                System.out.println(response.getResponseText());
+        TwilioRestResponse twilioResponse;
+            twilioResponse = client.request("/2010-04-01/Accounts/"+client.getAccountSid()+"/Calls.json", "POST", params);
+            if(twilioResponse.isError()) {
+    			response.status = StatusCode.BAD_REQUEST;
+    			renderJSON("Could not make the call.");
+            } else {
+            	String sid = new Gson().fromJson(twilioResponse.getResponseText(), TwilioResponse.class).sid;
+    			Acceptance acceptance = new Acceptance();
+    			acceptance.acceptor = user;
+    			acceptance.offer = offer;
+    			acceptance.executed = true;
+    			acceptance.executionTime = new Date();
+    			acceptance.executionId = sid;
+    			acceptance.save();
+    			renderJSON(acceptance);
             }
-        } catch (TwilioRestException e) {
-            e.printStackTrace();
-        }
 //		CallFactory callFactory = mainAccount.getCallFactory();
 //	    Map<String, String> callParams = new HashMap<String, String>();
 //	    callParams.put("To", "+15735290404"); // Replace with a valid phone number

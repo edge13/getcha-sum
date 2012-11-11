@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import models.Acceptance;
+import models.Alias;
 import models.Offer;
 import models.User;
 import models.twilio.TwilioResponse;
@@ -170,17 +171,19 @@ public class Offers extends BaseController {
 	}
 
 	private static void statusPromotion(User user, Offer offer) throws UnsupportedEncodingException {
-		if ("tumblr".equals(offer.type.toLowerCase())){
-			getAliases(user);
-		}
-		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+offer.type.toLowerCase()+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
+		String url = "https://api.singly.com/types/statuses?access_token="+ user.singlyAccessToken + "&to="+getTo(user, offer)+"&body="+ URLEncoder.encode(offer.content,"UTF-8");
 		JsonElement singlyResponse = WS.url(url).post().getJson().getAsJsonObject().get(offer.type.toLowerCase());
+		System.out.println(singlyResponse);
 		if (singlyResponse.getAsJsonObject().get("errors") != null) {
 			response.status = StatusCode.BAD_REQUEST;
 			renderJSON(singlyResponse.getAsJsonObject().get("errors").toString());
 		} else {
-			System.out.println(singlyResponse.toString());
-			String executionId = singlyResponse.getAsJsonObject().get("id").getAsString();
+			String executionId = "";
+			if ("tumblr".equals(offer.type.toLowerCase())) {
+				executionId = singlyResponse.getAsJsonObject().get("response").getAsJsonObject().get("id").getAsString();
+			} else {
+				executionId = singlyResponse.getAsJsonObject().get("id").getAsString();	
+			}
 			Acceptance acceptance = new Acceptance();
 			acceptance.acceptor = user;
 			acceptance.offer = offer;
@@ -190,6 +193,25 @@ public class Offers extends BaseController {
 			acceptance.save();
 			renderJSON(acceptance);
 		}
+	}
+
+	private static String getTo(User user, Offer offer) {
+		System.out.println("getTo");
+		System.out.println(offer.type.toLowerCase());
+		if ("tumblr".equals(offer.type.toLowerCase())) {
+			System.out.println("in if");
+			user = getAliases(user);
+			List<Alias> aliases = user.aliases;
+			System.out.println(user.aliases);
+			for (Alias alias : aliases) {
+				System.out.println(alias.name);
+				if ("tumblr".equals(alias.service)) {
+					System.out.println(alias.name + "@tumblr");
+					return alias.name + "@tumblr";
+				}
+			}
+		}
+		return offer.type.toLowerCase();
 	}
 	
 	public static void acceptances() {

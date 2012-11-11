@@ -18,6 +18,7 @@ import siena.Model;
 import siena.Query;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -64,18 +65,7 @@ public class Users extends BaseController {
 		if (user.aliases == null) {
 			user.aliases = new ArrayList<Alias>();
 		}
-		if (!StringUtils.isBlank(user.singlyAccessToken)) {
-			JsonElement singlyProfile = WS.url("https://api.singly.com/profile?access_token=" + user.singlyAccessToken).get().getJson();
-			JsonObject asJsonObject = singlyProfile.getAsJsonObject();
-			JsonObject asJsonObject2 = asJsonObject.get("services").getAsJsonObject();
-			Set<Entry<String, JsonElement>> entrySet = asJsonObject2.entrySet();
-			for (Entry<String, JsonElement> entry : entrySet) {
-				Alias alias = new Alias();
-				alias.service = entry.getKey();
-				alias.name = asJsonObject2.get(entry.getKey()).getAsJsonObject().get("name").getAsString();
-				user.aliases.add(alias);
-			}
-		}
+		getAliases(user);
 		if (!StringUtils.isBlank(user.dwollaAccessToken)) {
 			MemberInfo info = new DwollaTransfer().getInfo(user.dwollaAccessToken);
 			if (info != null) {

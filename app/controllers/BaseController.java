@@ -1,10 +1,12 @@
 package controllers;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -27,11 +29,13 @@ public class BaseController extends Controller {
 		renderJSON(msg);
 	}
 	
-	public static void getAliases(User user) {
-		System.out.println("get aliases");
+	public static User getAliases(User user) {
+		System.out.println(user.singlyAccessToken);
 		if (!StringUtils.isBlank(user.singlyAccessToken)) {
+			if (user.aliases == null) {
+				user.aliases = new ArrayList<Alias>();
+			}
 			JsonElement singlyProfile = WS.url("https://api.singly.com/profile?access_token=" + user.singlyAccessToken).get().getJson();
-			System.out.println(singlyProfile);
 			JsonObject asJsonObject = singlyProfile.getAsJsonObject();
 			JsonObject asJsonObject2 = asJsonObject.get("services").getAsJsonObject();
 			Set<Entry<String, JsonElement>> entrySet = asJsonObject2.entrySet();
@@ -39,8 +43,29 @@ public class BaseController extends Controller {
 				Alias alias = new Alias();
 				alias.service = entry.getKey();
 				alias.name = asJsonObject2.get(entry.getKey()).getAsJsonObject().get("name").getAsString();
+				if (user.aliases == null) {
+					user.aliases = new ArrayList<Alias>();
+				}
 				user.aliases.add(alias);
 			}
+			JsonElement tumblrProfile = WS.url("https://api.singly.com/profiles/tumblr?access_token="+ user.singlyAccessToken).get().getJson();
+			JsonElement blogs = tumblrProfile.getAsJsonObject().get("data").getAsJsonObject().get("blogs");
+			System.out.println(blogs);
+			if (blogs != null) {
+				JsonArray blogArray = blogs.getAsJsonArray();
+				System.out.println(blogArray.size());
+				System.out.println(blogArray.get(0).getAsJsonObject().get("name").getAsString());
+				if (blogArray.size() > 0) {
+					Alias alias = new Alias();
+					alias.service = "tumblr";
+					alias.name = blogArray.get(0).getAsJsonObject().get("name").getAsString();
+					if (user.aliases == null) {
+						user.aliases = new ArrayList<Alias>();
+					}
+					user.aliases.add(alias);
+				}
+			}
 		}
+		return user;
 	}
 }

@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import models.Acceptance;
 import models.Offer;
 import models.User;
+import play.Logger;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 import play.mvc.Controller;
@@ -42,7 +43,7 @@ public class Offers extends BaseController {
 		return offerTypes;
 	}
 
-	public static void create() {
+	public static void create() throws Exception {
 		Offer offer = parseJSON(request.body);
 		if (StringUtils.isBlank(offer.pin)) {
 			badRequest("Dwolla Pin is required.");
@@ -63,12 +64,19 @@ public class Offers extends BaseController {
 			badRequest("Type is required.");
 		}
 		
-		String token = request.headers.get("authorization").values.get(0);
-		User owner = Model.all(User.class).filter("token", token.replaceAll("\"", "")).get();
-		offer.owner = owner;
-		offer.type = offer.type.toLowerCase();
-		offer.insert();
-		renderJSON(offer);
+		User user = getUser();
+		Logger.info("Ready to validate dwolla account " + offer.pin + " " + user.dwollaAccessToken);
+		if (new DwollaTransfer().validate(offer, user)) {
+			Logger.info("Dwolla validation complete");
+			offer.owner = user;
+			offer.type = offer.type.toLowerCase();
+			offer.insert();
+			renderJSON(offer);
+		} else {
+			Logger.error("Dwolla validation failed");
+			badRequest("Your dwolla account cannot be charged. Please confirm your pin/balance.");
+		}
+		
 	}
 	
 	public static void getAll() {

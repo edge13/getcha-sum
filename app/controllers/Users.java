@@ -59,7 +59,7 @@ public class Users extends BaseController {
 
 
 	
-	public static void me() {
+	public static void me() throws Exception {
 		User user = getUser();
 		if (user.aliases == null) {
 			user.aliases = new ArrayList<Alias>();
@@ -77,7 +77,10 @@ public class Users extends BaseController {
 			}
 		}
 		if (!StringUtils.isBlank(user.dwollaAccessToken)) {
-			user.dwollaName = new DwollaTransfer().getInfo(user.dwollaAccessToken).Name;
+			MemberInfo info = new DwollaTransfer().getInfo(user.dwollaAccessToken);
+			if (info != null) {
+				user.dwollaName = new DwollaTransfer().getInfo(user.dwollaAccessToken).Name;
+			}
 		}
 		renderJSON(user);
 	}

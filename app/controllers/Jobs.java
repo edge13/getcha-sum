@@ -12,7 +12,7 @@ import dwolla.DwollaTransfer;
 import siena.Model;
 
 public class Jobs extends BaseController {
-	public static void pay() {
+	public static void pay() throws Exception {
 		System.out.println("Pay the money");
 		List<Acceptance> unpaid = Model.all(Acceptance.class).filter("executed", true).filter("paid", false).filter("executionTime <", new DateTime().minusMinutes(5).toDate()).fetch();
 		

@@ -4,7 +4,6 @@ package controllers;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,27 +11,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 import models.Acceptance;
 import models.Offer;
 import models.User;
 import models.twilio.TwilioResponse;
+
+import org.apache.commons.lang.StringUtils;
+
 import play.Logger;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 import play.modules.pusher.Pusher;
-import play.mvc.Controller;
 import play.mvc.Http.StatusCode;
 import siena.Model;
-import siena.Query;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.twilio.sdk.TwilioRestClient;
-import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.TwilioRestResponse;
-
 
 import dwolla.DwollaTransfer;
 
@@ -162,7 +158,7 @@ public class Offers extends BaseController {
     			renderJSON("Could not make the call.");
             } else {
             	String sid = new Gson().fromJson(twilioResponse.getResponseText(), TwilioResponse.class).sid;
-    			Acceptance acceptance = new Acceptance();
+    			Acceptance acceptance = Acceptances.parseJSON(request.body);
     			acceptance.acceptor = user;
     			acceptance.offer = offer;
     			acceptance.executed = true;

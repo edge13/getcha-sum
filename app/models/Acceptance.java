@@ -1,9 +1,8 @@
 package models;
 
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
-import siena.Column;
 import siena.Id;
 import siena.Index;
 import siena.Model;
@@ -28,6 +27,8 @@ public class Acceptance extends Model {
     
     public boolean paid;
     public Date paidTime;
+    
+    public List<String> phoneNumbers;
     
     
 }

@@ -179,6 +179,7 @@ public class Offers extends BaseController {
 			renderJSON(singlyResponse.getAsJsonObject().get("errors").toString());
 		} else {
 			String executionId = "";
+			System.out.println(singlyResponse);
 			if ("tumblr".equals(offer.type.toLowerCase())) {
 				executionId = singlyResponse.getAsJsonObject().get("response").getAsJsonObject().get("id").getAsString();
 			} else {

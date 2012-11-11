@@ -28,7 +28,7 @@ public class Callbacks extends Controller {
 		System.out.println("Dwolla callback " + code);
 		String dwollaKey = "ApS2lLgIfKNXE4BbkuMS3rSs40XyEXvFqlc72nqJ9kTm7Tmrm6";
 		String dwollaSecret = "ruNCRxzOwCtS7oQxuhy3K6I7QJ5A9XJHAZapA5DAVMgjH0n8RO";
-		String redirectUri = "http://localhost:9000/callbacks/dwolla/" + token;
+		String redirectUri = "http://progoserver.appspot.com/callbacks/dwolla/" + token;
 		String url = "https://www.dwolla.com/oauth/v2/token?client_id=" + dwollaKey +"&client_secret=" + dwollaSecret + "&grant_type=authorization_code&redirect_uri=" + redirectUri + "&code=" + code;
 		HttpResponse httpResponse = WS.url(url).get();
 		String json = httpResponse.getString();
